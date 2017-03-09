@@ -4,60 +4,57 @@ import mlab
 
 class TaskListRest(Resource):
     def get(self):
-        tasks = Task.objects()
-        task_json = mlab.list2json(tasks)
-        return task_json
-
+        task = Task.objects()
+        return mlab.list2json(task)
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument(name = "name", type = str, location = "json")
-        parser.add_argument(age = "age", type = int, location = "json")
-        parser.add_argument(local_id = "local_id", type = str, location = "json")
-        parser.add_argument(color = "color", type = str, location = "json")
-        parser.add_argument(gender = "gender", type = str, location = "json")
+        parser.add_argument(name = "local_id", type = str, location ="json")
+        parser.add_argument(name = "name",type = str, location = "json")
+        parser.add_argument(name = "color",type = str, location = "json")
+        parser.add_argument(name = "done",type = bool, location = "json")
 
         body = parser.parse_args()
 
-        name = body["name"]
         local_id = body["local_id"]
+        name = body["name"]
         color = body["color"]
-        gender = body["gender"]
-        age = body["age"]
+        done = body["done"]
 
-        task = Task(name = name, local_id = local_id, age=age, gender = gender, color = color,done = False)
+        task = Task(name = name, local_id = local_id, color = color, done = False)
         task.save()
 
-        added_task = Task.objects().with_id(task.id)
-        return mlab.item2json(added_task)
+        return mlab.item2json(task)
+
 
 class TaskRes(Resource):
     def get(self,task_id):
-        task = Task.objects.with_id(task_id)
+        task = Task.objects().with_id(task_id)
         return mlab.item2json(task)
 
     def delete(self,task_id):
         task = Task.objects.with_id(task_id)
-        task.delete()
+        if task == None:
+            return {"Delete": "Task not found"}
+        else:
+            task.delete()
+            return {"Delete": "Successful"}
 
     def put(self,task_id):
-        task = Task.objects.with_id(task_id)
-        parser = reqparse.RequestParser
+        parse = reqparse.RequestParser()
+        parse.add_argument(name="local_id", type=str, location="json")
+        parse.add_argument(name="name", type=str, location="json")
+        parse.add_argument(name="color", type=str, location="json")
+        parse.add_argument(name="done", type=bool, location="json")
 
-        parser.add_argument(name="name", type=str, location="json")
-        parser.add_argument(age="age", type=int, location="json")
-        parser.add_argument(local_id="local_id", type=str, location="json")
-        parser.add_argument(color="color", type=str, location="json")
-        parser.add_argument(gender="gender", type=str, location="json")
+        body = parse.parse_args()
 
-        body = parser.parse_args()
-
-        name = body["name"]
         local_id = body["local_id"]
+        name = body["name"]
         color = body["color"]
-        gender = body["gender"]
-        age = body["age"]
+        done = body["done"]
 
-        task.update(name = name, local_id = local_id, age = age, gender = gender, color = color, done = False)
-        taskupdate = Task.objects.with_id(task_id)
+        task = Task.objects().with_id(task_id)
+        task.update(local_id = local_id, name = name, color = color, done = done)
+        update_task = Task.objects.with_id(task_id)
 
-        return mlab.item2json(taskupdate)
+        return mlab.item2json(update_task)

@@ -12,7 +12,7 @@ api = Api(app)
 # task.save()
 
 # for i in range(10):
-#     task = Task(name = "Khanh Pham Dinh"+str(i), gender = "Male",age = i+15, local_id = "adbca-adafr-123"+str(i),color = "#2DF4H"+str(i))
+#     task = Task(name = "Khanh Pham Dinh"+str(i), local_id = "adbca-adafr-123"+str(i),color = "#2DF4H"+str(i))
 #     task.save()
 
 
