@@ -11,15 +11,20 @@ class TaskListRest(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument(name = "name", type = str, location = "json")
-        parser.add_argument(name = "local_id", type = str, location = "json")
-        parser.add_argument(name = "color", type = str, location = "json")
+        parser.add_argument(age = "age", type = int, location = "json")
+        parser.add_argument(local_id = "local_id", type = str, location = "json")
+        parser.add_argument(color = "color", type = str, location = "json")
+        parser.add_argument(gender = "gender", type = str, location = "json")
 
         body = parser.parse_args()
 
         name = body["name"]
         local_id = body["local_id"]
         color = body["color"]
-        task = Task(name = name, local_id = local_id, done = False)
+        gender = body["gender"]
+        age = body["age"]
+
+        task = Task(name = name, local_id = local_id, age=age, gender = gender, color = color,done = False)
         task.save()
 
         added_task = Task.objects().with_id(task.id)
@@ -30,3 +35,29 @@ class TaskRes(Resource):
         task = Task.objects.with_id(task_id)
         return mlab.item2json(task)
 
+    def delete(self,task_id):
+        task = Task.objects.with_id(task_id)
+        task.delete()
+
+    def put(self,task_id):
+        task = Task.objects.with_id(task_id)
+        parser = reqparse.RequestParser
+
+        parser.add_argument(name="name", type=str, location="json")
+        parser.add_argument(age="age", type=int, location="json")
+        parser.add_argument(local_id="local_id", type=str, location="json")
+        parser.add_argument(color="color", type=str, location="json")
+        parser.add_argument(gender="gender", type=str, location="json")
+
+        body = parser.parse_args()
+
+        name = body["name"]
+        local_id = body["local_id"]
+        color = body["color"]
+        gender = body["gender"]
+        age = body["age"]
+
+        task.update(name = name, local_id = local_id, age = age, gender = gender, color = color, done = False)
+        taskupdate = Task.objects.with_id(task_id)
+
+        return mlab.item2json(taskupdate)
